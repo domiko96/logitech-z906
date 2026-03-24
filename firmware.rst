@@ -33,16 +33,21 @@ may damage the lower buttons.
    The bottom row of pins on the programming port is the row nearest the PCB.
 .. |Vdd| replace:: V\ :sub:`DD`
 
+
+Access the Firmware
+-------------------
+
 The firmware can be accessed using an ST-LINK implementation,
 e.g. `esp-stlink <https://github.com/nomis/esp-stlink/tree/sa>`_
 and `stm8flash <https://github.com/nomis/stm8flash/tree/sa>`_.
+or `stm8flash <https://github.com/vdudouyt/stm8flash.git>`_
 
 The flash consists of 64 byte pages. Writes must be to whole pages.
-
 The EEPROM consists of 640 bytes that are all zero.
-
 Attempts were made to use an official ST-LINK/V2 but it was unable to
 communicate.
+These ones from Aliexpress were used instead and they work fine:
+<https://de.aliexpress.com/item/1005006825762212.html?spm=a2g0o.order_list.order_list_main.5.5d3f5c5fvxloWG&gatewayAdapt=glo2deu>
 
 .. list-table::
    :header-rows: 1
@@ -54,12 +59,49 @@ communicate.
      - 8KB
      - ``a16ecffacc67c9005814028080c90d098f10708b88b285fdbeef480358c37cb8``
 
-Useful tools
-~~~~~~~~~~~~
+To get the stm8flash utility from vdudouyt's repository, use the following command:
+
+.. code-block:: bash
+
+   git clone https://github.com/vdudouyt/stm8flash.git
+   cd stm8flash
+   make
+
+To dump the flash to a file called ``flash.bin`` run:
+
+.. code-block:: bash
+
+   ./stm8flash -c stlinkv2 -S 48001400180000413539594E -p STM8S103K3 -s flash -r flash.bin
+
+where:
+
+- ``-c`` specifies the programmer
+- ``-S`` specifies the serial number of the programmer
+- ``-p`` specifies the microcontroller type
+- ``-s`` specifies the memory type to access
+- ``-r`` specifies the file to read into
+
+To view and edit the binary file:
+
+.. code-block:: bash
+
+   xdd flash.bin
+   vi -b flash.bin
+
+To write a file called ``flash-modified.bin`` to the flash:
+
+.. code-block:: bash
+
+   ./stm8flash -c stlinkv2 -S 48001400180000413594E -p STM8S103K3 -s flash -w flash-modified.bin
+
+
+Other Useful tools used for analysis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 * `Disassembler (naken_asm) <https://github.com/mikeakohn/naken_asm>`_
 * `Decompiler (Ghidra) <https://ghidra-sre.org/>`_
   with `STM8 plugin <https://github.com/esaulenka/ghidra_STM8>`_
+
 
 Modifications
 ~~~~~~~~~~~~~
